@@ -1,3 +1,7 @@
+# Acknowlegements / Citations
+
+[Robot sprite sheet by "Wayward Martian"](https://forums.rpgmakerweb.com/index.php?threads/skinny-robot-charset-wanted-for-mv.126540/)
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
