@@ -12,7 +12,7 @@ interface StyledRobotProps {
   animationFrame: number;
   direction?: string;
 }
-const whichFrame = ({
+const whichSprite = ({
   animationFrame,
   direction,
 }: StyledRobotProps): { x: number; y: number } => {
@@ -50,7 +50,7 @@ const StyledRobot = styled.div<StyledRobotProps>`
   height: 45px;
   z-index: 1000;
   background: ${(props) => {
-    const { x, y } = whichFrame(props);
+    const { x, y } = whichSprite(props);
     return `url(${process.env.PUBLIC_URL}/sprites/robot-sprite-sheet.jpg) -${x}px -${y}px`;
   }};
 `;
@@ -68,17 +68,20 @@ const useMemoizedRobotContext = () => {
 export const Robot = () => {
   const { robotFacing } = useMemoizedRobotContext();
   const [animationFrame, setAnimationFrame] = useState<number>(0);
+
   const tick = useCallback(() => {
     let tickInterval = setInterval(
-      () => setAnimationFrame((time) => (time + 1) % 16),
-      500
+      () => setAnimationFrame((time) => (time + 1) % 4),
+      250
     );
     return () => clearInterval(tickInterval);
   }, [setAnimationFrame]);
+
   useEffect(() => {
     let tickTimeout = tick();
     return tickTimeout;
   }, [tick]);
+
   if (typeof robotFacing !== "undefined") {
     return (
       <StyledRobot animationFrame={animationFrame} direction={robotFacing} />

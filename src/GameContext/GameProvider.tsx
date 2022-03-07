@@ -17,10 +17,7 @@ export const GameDispatchContext = createContext({
 });
 
 const GameProvider = ({ children }: { children: ReactNode }) => {
-  const logAsWarn = useCallback((info) => {
-    console.warn(info);
-  }, []);
-  const { state, processCommand } = useGame(logAsWarn);
+  const { state, processCommand } = useGame();
   return (
     <GameStateContext.Provider value={state}>
       <GameDispatchContext.Provider value={{ processCommand }}>

@@ -1,3 +1,4 @@
+import { stat } from "fs";
 import { useImmerReducer } from "use-immer";
 /* Immer is built into redux, but as this is a small app, it doesn't really need it.
    Mostly this is so that we correctly render changes to the board matrix - that 
@@ -25,7 +26,10 @@ export interface GameState {
 
 const DIRECTIONS = ["NORTH", "EAST", "SOUTH", "WEST"];
 
-const goTurn = (turn: string, currDirection?: string): string | undefined => {
+export const goTurn = (
+  turn: string,
+  currDirection?: string
+): string | undefined => {
   if (typeof currDirection === "undefined") {
     return undefined;
   }
@@ -43,16 +47,19 @@ const goTurn = (turn: string, currDirection?: string): string | undefined => {
   if (turn === "RIGHT") {
     return DIRECTIONS[(nowIndex + 1) % 4];
   }
+  return currDirection;
 };
 
-// isn't it cool how the commands in the spec always have
-// the same values in the same place?
 const convertOffByOne = (n?: string, adder = -1): number | undefined => {
   if (n === undefined) {
     return undefined;
   }
   return parseInt(n, 10) + adder;
 };
+
+// isn't it cool how the commands in the spec always have
+// the same values in the same place?
+
 export const parseCommand = (command: string): ReducerAction => {
   const [type, xStr, yStr, facing]: Array<string | undefined> =
     command.split(/[\s,]+/);
@@ -110,12 +117,19 @@ const gameImmerReducer = (
       state.robotFacing = facing;
     }
   }
+  if (type === "CLEAR_ROBOT") {
+    state.robotX = undefined;
+    state.robotY = undefined;
+    state.robotFacing = undefined;
+  }
   if (type === "PLACE_WALL") {
     if (isValidPlacement(state.board, x, y)) {
-      state.board[x as number][y as number] = false;
+      if (x !== state.robotX && y !== state.robotY) {
+        state.board[x as number][y as number] = false;
+      }
     }
   }
-  if (type === "UNPLACE_WALL") {
+  if (type === "CLEAR_WALL") {
     if (isValidPlacement(state.board, x, y)) {
       state.board[x as number][y as number] = true;
     }
@@ -155,7 +169,7 @@ const gameImmerReducer = (
   }
 };
 
-export const useGame = (outputReport: (report: string) => void) => {
+export const useGame = () => {
   const [state, dispatch] = useImmerReducer(gameImmerReducer, {
     board: initBoard(),
     robotX: undefined,

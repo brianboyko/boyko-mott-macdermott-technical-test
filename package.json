@@ -44,6 +44,7 @@
     ]
   },
   "devDependencies": {
-    "@types/styled-components": "^5.1.24"
+    "@types/styled-components": "^5.1.24",
+    "react-test-renderer": "^17.0.2"
   }
 }
