@@ -5,7 +5,6 @@ import Robot from "./Robot";
 
 const StyledCell = styled.div<{ isRobot: boolean; live: boolean }>`
   position: relative;
-  border: 1px solid black;
   width: 60px;
   height: 60px;
   border: ${(props) =>
@@ -21,6 +20,8 @@ const StyledCell = styled.div<{ isRobot: boolean; live: boolean }>`
 
 export const Board = () => {
   const state = useContext(GameStateContext);
+  const isRobot = (cellIndex: number, rowIndex: number): boolean =>
+    state.robotX === cellIndex && state.robotY === rowIndex;
   return (
     <div>
       {state.board
@@ -28,16 +29,12 @@ export const Board = () => {
           <div key={`row-${rowIndex}`} style={{ display: "flex" }}>
             {row.map((cell, cellIndex) => (
               <StyledCell
-                isRobot={
-                  state.robotX === cellIndex && state.robotY === rowIndex
-                }
+                isRobot={isRobot(cellIndex, rowIndex)}
                 key={`cell-${rowIndex}-${cellIndex}`}
                 live={cell}
               >
-                x{cellIndex},y{rowIndex}
-                {state.robotX === cellIndex && state.robotY === rowIndex ? (
-                  <Robot />
-                ) : null}
+                {`{${cellIndex},${rowIndex}}`}
+                {isRobot(cellIndex, rowIndex) ? <Robot /> : null}
               </StyledCell>
             ))}
           </div>

@@ -9,17 +9,17 @@ export const GameStateContext = createContext<GameState>({
   robotX: undefined,
   robotY: undefined,
   robotFacing: undefined,
-  log: []
+  log: [],
 });
 
 export const GameDispatchContext = createContext({
   processCommand: (_command: string) => {},
 });
 
-const GameProvider = ({ children }: {children: ReactNode}) => {
+const GameProvider = ({ children }: { children: ReactNode }) => {
   const logAsWarn = useCallback((info) => {
     console.warn(info);
-  }, []); 
+  }, []);
   const { state, processCommand } = useGame(logAsWarn);
   return (
     <GameStateContext.Provider value={state}>
