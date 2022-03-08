@@ -15,27 +15,6 @@ const useGameSetup = () => {
 // These tests aren't exhaustive, but they should cover most
 // use cases.
 
-const TEST_1 = `
-PLACE_ROBOT 3,3,NORTH
-PLACE_WALL 3,5
-MOVE
-MOVE
-RIGHT
-MOVE
-MOVE
-MOVE
-REPORT
-`;
-const TEST_2 = `
-PLACE_ROBOT 2,2,WEST
-PLACE_WALL 1,1
-PLACE_WALL 2,2
-PLACE_WALL 1,3
-LEFT
-LEFT
-MOVE
-REPORT`;
-
 describe("useGame suite", () => {
   describe("goTurn()", () => {
     it("correctly turns", () => {
@@ -83,8 +62,8 @@ describe("useGame suite", () => {
     });
   });
   describe("useGame() custom hook", () => {
-    it("correctly handles game state", () => {
-      const gameSetup = useGameSetup();
+    const gameSetup = useGameSetup();
+    it("initializes correctly", () => {
       expect(gameSetup.state).toEqual({
         board: [
           [true, true, true, true, true],
@@ -98,7 +77,69 @@ describe("useGame suite", () => {
         robotFacing: undefined,
         log: [],
       });
+    });
+    it("correctly places a robot", () => {
       act(() => {
+        gameSetup.processCommand(`PLACE_ROBOT 2,3,NORTH`);
+      });
+      expect(gameSetup.robotX).toBe(1);
+      expect(gameSetup.robotY).toBe(2);
+      expect(gameSetup.robotFacing).toBe("NORTH");
+    });
+    it("ignores an invalid facing direction", () => {
+      act(() => {
+        gameSetup.processCommand(`PLACE_ROBOT 1,1,CENTER`);
+      });
+      // no changes
+      expect(gameSetup.robotX).toBe(1);
+      expect(gameSetup.robotY).toBe(2);
+      expect(gameSetup.robotFacing).toBe("NORTH");
+    });
+    it("ignores an invalid coordinate", () => {
+      act(() => {
+        gameSetup.processCommand(`PLACE_ROBOT 2,6,EAST`);
+      });
+      // no changes
+      expect(gameSetup.robotX).toBe(1);
+      expect(gameSetup.robotY).toBe(2);
+      expect(gameSetup.robotFacing).toBe("NORTH");
+    });
+    it("moves the robot", () => {
+      act(() => {
+        // robot starts at 1,1 facing North
+        gameSetup.processCommand(`PLACE_ROBOT 1,1,NORTH`);
+        gameSetup.processCommand(`MOVE`);
+        gameSetup.processCommand(`REPORT`);
+        gameSetup.processCommand(`PLACE_ROBOT 1,1,SOUTH`);
+        gameSetup.processCommand(`MOVE`);
+        gameSetup.processCommand(`REPORT`);
+      });
+      expect(gameSetup.state.log).toEqual([`1,2,NORTH`, `1,5,SOUTH`]);
+    });
+    it("rotates the robot", () => {
+      act(() => {
+        // robot starts at 1,1 facing North
+        gameSetup.processCommand(`PLACE_ROBOT 1,1,NORTH`);
+        gameSetup.processCommand(`LEFT`);
+        gameSetup.processCommand(`REPORT`);
+        gameSetup.processCommand(`RIGHT`);
+        gameSetup.processCommand(`REPORT`);
+      });
+      expect(gameSetup.state.log).toEqual([`1,1,WEST`, `1,1,NORTH`]);
+    });
+    it("correctly handles complex game state", () => {
+      act(() => {
+        const TEST_1 = `
+          PLACE_ROBOT 3,3,NORTH
+          PLACE_WALL 3,5
+          MOVE
+          MOVE
+          RIGHT
+          MOVE
+          MOVE
+          MOVE
+          REPORT
+        `;
         TEST_1.split("\n").forEach((line) => {
           gameSetup.processCommand(line);
         });
@@ -121,6 +162,15 @@ describe("useGame suite", () => {
         gameSetup.processCommand("CLEAR_ROBOT");
         gameSetup.processCommand("CLEAR_REPORTS");
 
+        const TEST_2 = `PLACE_ROBOT 2,2,WEST
+          PLACE_WALL 1,1
+          PLACE_WALL 2,2
+          PLACE_WALL 1,3
+          LEFT
+          LEFT
+          MOVE
+          REPORT
+        `;
         TEST_2.split("\n").forEach((line) => {
           gameSetup.processCommand(line);
         });

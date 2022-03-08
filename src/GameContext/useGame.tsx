@@ -73,8 +73,10 @@ const convertOffByOne = (n?: string, adder = -1): number | undefined => {
 // the same values in the same place?
 
 export const parseCommand = (command: string): ReducerAction => {
-  const [type, xStr, yStr, facing]: Array<string | undefined> =
-    command.split(/[\s,]+/); // destructuring ftw;
+  const [type, xStr, yStr, facing]: Array<string | undefined> = command
+    .split(/[\s,]+/)
+    .map((str) => str.trim())
+    .filter((elem) => !!elem); // destructuring ftw;
   const x: number | undefined = convertOffByOne(xStr);
   const y: number | undefined = convertOffByOne(yStr);
   return { type, x, y, facing };
