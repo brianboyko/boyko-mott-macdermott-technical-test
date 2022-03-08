@@ -1,6 +1,58 @@
+# Technical Test - Brian Boyko for Mott MacDermott
+
+## Specifications
+
+Impliment a Toy Robot Game
+
+KEY:
+✅ - Done
+⚠️ - Partial completion
+❌ - Incomplete
+
+- [✅] Create 5x5 board with coordinate system.
+  - Bottom left is (1, 1), top right is (5, 5)
+- [✅] Solution must respond to the following commands
+  - [✅] PLACE_ROBOT {ROW},{COL},{FACING}
+    - If there are no robots, place the robot in the coordinates provided
+    - If there is already a robot, move the robot from the old to new location
+    - If the coordinate or facing value is invalid, noop.
+  - [✅] PLACE_WALL {ROW},{COL}
+    - If the target location is empty, add a wall
+    - The user can add as many walls as they like
+    - If the target location is occupied by the robot or another wall, this command is ignored
+    - Invalid coordinates are ignored.
+  - [✅] REPORT
+    - Prints out a report in the form of {ROW},{COL},{FACING}
+  - [✅] MOVE
+    - Move command moves the robot 1 space forward in the direction it is facing
+    - If there are no robots, this is ignored
+    - If there is a wall in the way of the robot, this is ignored.
+    - If the robot is at the edge of the board, wrap around.
+  - [✅] LEFT / RIGHT
+    - Turn the robot 90 degrees to it's left or right.
+    - If there is no robot, this command is ignored.
+
+## Requirements
+
+- [✅] Solution must use React
+- [✅] Solution must use JS/TS
+- [⚠️] Solution must include unit tests
+- [✅] Solution must handle input
+- [⚠️] Solution must be production ready
+
+## Stretch
+
+- [❌] Solution Must Look Good
+- [❌] Provide button interface for user to input commands
+- [❌] Provide Component Rendering snapshots
+
 # Acknowlegements / Citations
 
 [Robot sprite sheet by "Wayward Martian"](https://forums.rpgmakerweb.com/index.php?threads/skinny-robot-charset-wanted-for-mv.126540/)
+
+---
+
+CRA Directions
 
 # Getting Started with Create React App
 
