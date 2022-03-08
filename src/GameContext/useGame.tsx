@@ -1,9 +1,14 @@
-import { stat } from "fs";
 import { useImmerReducer } from "use-immer";
-/* Immer is built into redux, but as this is a small app, it doesn't really need it.
-   Mostly this is so that we correctly render changes to the board matrix - that 
-   react notices this is a change, without having tons of 'spread parties' or 
-   (god forbid) JSON.parse(JSON.stringify(state)); 
+/* Immer is built into reduxjs/toolkit, but as this is a small app, 
+   it doesn't really need redux. It *does* need Immer, though.
+   
+   One of the tricks with React is that if you alter a property
+   on an object, it won't register the change and re-render. 
+
+   While JS "doesn't use pointers", what's really happening is that
+   React is listening for a change in the pointer, not a deep listen.
+   Using an immutability library means that altering a property creates
+   a new immutable object which WILL register as a change. 
 */
 
 export type BoardRow = [boolean, boolean, boolean, boolean, boolean];
@@ -24,6 +29,10 @@ export interface GameState {
   log: string[];
 }
 
+// This could be an enum, or we could refer to it as
+// type Direction = "NORTH" | "EAST" | "SOUTH" | "WEST" | undefined
+// but that's a level of TS specificity that a code challenge doesn't
+// really need.
 const DIRECTIONS = ["NORTH", "EAST", "SOUTH", "WEST"];
 
 export const goTurn = (
@@ -50,6 +59,9 @@ export const goTurn = (
   return currDirection;
 };
 
+// Kludgy but servicable - converts a number or a "number as string" to a number,
+// then adds or subtracts a value from it. Useful for turning 0-indexed arrays
+// into 1-index grids.
 const convertOffByOne = (n?: string, adder = -1): number | undefined => {
   if (n === undefined) {
     return undefined;
@@ -62,7 +74,7 @@ const convertOffByOne = (n?: string, adder = -1): number | undefined => {
 
 export const parseCommand = (command: string): ReducerAction => {
   const [type, xStr, yStr, facing]: Array<string | undefined> =
-    command.split(/[\s,]+/);
+    command.split(/[\s,]+/); // destructuring ftw;
   const x: number | undefined = convertOffByOne(xStr);
   const y: number | undefined = convertOffByOne(yStr);
   return { type, x, y, facing };
@@ -76,33 +88,48 @@ const isValidPlacement = (
   x?: number,
   y?: number,
   facing?: string
-) => {
+): boolean => {
+  // if we've defined facing but NOT correctly
   if (facing !== undefined && !DIRECTIONS.includes(facing)) {
     return false;
   }
+  // if we've not correctly defined the position
   if (typeof x === "undefined" || typeof y === "undefined") {
     return false;
   }
+  // if it's not on the board.
   if (x > -1 && x < 5 && y > -1 && y < 5) {
+    // return the current cell state
     return board[x][y];
   }
+  return false;
 };
 
+const isValidReportData = (state: GameState): boolean => {
+  return (
+    typeof state.robotX === "number" &&
+    typeof state.robotY === "number" &&
+    typeof state.robotFacing === "string" &&
+    DIRECTIONS.includes(state.robotFacing)
+  );
+};
+
+/* using immer means that we can just mutate the state
+    and it will diff automatically. Some programmers
+    prefer using the parameter name "draft", as in
+    const gameImmerReducer = (draft, action) => {}; */
 const gameImmerReducer = (
   state: GameState,
   { type, x, y, facing }: ReducerAction
 ) => {
-  if (type === "REPORT") {
-    if (
-      typeof state.robotX === "number" &&
-      typeof state.robotY === "number" &&
-      typeof state.robotFacing === "string" &&
-      DIRECTIONS.includes(state.robotFacing)
-    ) {
-      state.log.push(
-        `${state.robotX + 1},${state.robotY + 1},${state.robotFacing}`
-      );
-    }
+  // if statements just as performant as switch statements in JS
+  // and we don't have to worry about fallthrough.
+  if (type === "REPORT" && isValidReportData(state)) {
+    state.log.push(
+      `${(state.robotX as number) + 1},${(state.robotY as number) + 1},${
+        state.robotFacing
+      }`
+    );
   }
   if (type === "CLEAR_REPORTS") {
     state.log = [];
@@ -110,24 +137,22 @@ const gameImmerReducer = (
   if (type === "CLEAR_BOARD") {
     state.board = initBoard();
   }
-  if (type === "PLACE_ROBOT") {
-    if (isValidPlacement(state.board, x, y, facing)) {
-      state.robotX = x;
-      state.robotY = y;
-      state.robotFacing = facing;
-    }
+  if (type === "PLACE_ROBOT" && isValidPlacement(state.board, x, y, facing)) {
+    state.robotX = x;
+    state.robotY = y;
+    state.robotFacing = facing;
   }
   if (type === "CLEAR_ROBOT") {
     state.robotX = undefined;
     state.robotY = undefined;
     state.robotFacing = undefined;
   }
-  if (type === "PLACE_WALL") {
-    if (isValidPlacement(state.board, x, y)) {
-      if (x !== state.robotX && y !== state.robotY) {
-        state.board[x as number][y as number] = false;
-      }
-    }
+  if (
+    type === "PLACE_WALL" &&
+    isValidPlacement(state.board, x, y) &&
+    !(x === state.robotX && y === state.robotY)
+  ) {
+    state.board[x as number][y as number] = false;
   }
   if (type === "CLEAR_WALL") {
     if (isValidPlacement(state.board, x, y)) {

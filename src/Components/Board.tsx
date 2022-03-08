@@ -22,6 +22,7 @@ export const Board = () => {
   const state = useContext(GameStateContext);
   const isRobot = (cellIndex: number, rowIndex: number): boolean =>
     state.robotX === cellIndex && state.robotY === rowIndex;
+  // I don't like how this is structured. Refactor target for code readability?
   return (
     <div>
       {state.board

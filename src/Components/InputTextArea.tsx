@@ -9,11 +9,11 @@ export const InputTextArea = () => {
     const value = event.target.value;
     setTextValue(value);
   };
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     const lines = textValue.split("\n");
     processCommand(lines[0]);
     setTextValue(lines.slice(1).join("\n"));
-  };
+  }, [processCommand, textValue]);
   return (
     <div>
       <textarea onChange={handleTextValue} value={textValue} />

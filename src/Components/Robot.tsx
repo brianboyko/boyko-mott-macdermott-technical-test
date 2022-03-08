@@ -55,6 +55,8 @@ const StyledRobot = styled.div<StyledRobotProps>`
   }};
 `;
 
+// We don't want to re-render when the state changes
+// only when the robot changes direction.
 const useMemoizedRobotContext = () => {
   const state = useContext(GameStateContext);
   const { robotFacing } = state;

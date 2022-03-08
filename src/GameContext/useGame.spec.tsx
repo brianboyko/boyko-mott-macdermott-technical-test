@@ -12,6 +12,9 @@ const useGameSetup = () => {
   return returnVal;
 };
 
+// These tests aren't exhaustive, but they should cover most
+// use cases.
+
 const TEST_1 = `
 PLACE_ROBOT 3,3,NORTH
 PLACE_WALL 3,5
@@ -83,7 +86,13 @@ describe("useGame suite", () => {
     it("correctly handles game state", () => {
       const gameSetup = useGameSetup();
       expect(gameSetup.state).toEqual({
-        board: initBoard(),
+        board: [
+          [true, true, true, true, true],
+          [true, true, true, true, true],
+          [true, true, true, true, true],
+          [true, true, true, true, true],
+          [true, true, true, true, true],
+        ],
         robotX: undefined,
         robotY: undefined,
         robotFacing: undefined,
@@ -95,11 +104,17 @@ describe("useGame suite", () => {
         });
       });
       expect(gameSetup.state).toEqual({
-        board: initBoard(),
+        board: [
+          [true, true, true, true, true],
+          [true, true, true, true, true],
+          [true, true, true, true, false],
+          [true, true, true, true, true],
+          [true, true, true, true, true],
+        ],
         robotFacing: "EAST",
         robotX: 0,
-        robotY: 4,
-        log: ["1,5,EAST"],
+        robotY: 3,
+        log: ["1,4,EAST"],
       });
       act(() => {
         gameSetup.processCommand("CLEAR_BOARD");
