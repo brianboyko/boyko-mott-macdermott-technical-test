@@ -8,14 +8,18 @@ const StyledCell = styled.div<{ isRobot: boolean; live: boolean }>`
   width: 60px;
   height: 60px;
   border: ${(props) =>
-    props.isRobot ? `1px solid gold` : `1px solid #888888`};
+    props.isRobot ? `1px solid black` : `1px solid #888888`};
   color: ${(props) => (props.live ? "black" : "white")};
   background: ${(props) =>
     props.live ? "rgba(255,255,247,1)" : "rgba(2,0,36,1)"};
-  background: ${(props) =>
-    props.live
+  background: ${(props) => {
+    if(props.isRobot && props.live){
+      return "white"
+    }
+    return props.live
       ? "radial-gradient(circle, rgba(2,0,36,1) 0%, rgba(255,255,247,1) 0%, rgba(198,198,192,1) 92%, rgba(9,9,9,1) 100%)"
-      : "radial-gradient(circle, rgba(2,0,36,1) 0%, rgba(255,255,247,1) 0%, rgba(9,9,9,1) 0%, rgba(30,30,30,1) 86%, rgba(255,255,255,1) 100%)"};
+      : "radial-gradient(circle, rgba(2,0,36,1) 0%, rgba(255,255,247,1) 0%, rgba(9,9,9,1) 0%, rgba(30,30,30,1) 86%, rgba(255,255,255,1) 100%)";
+  }};
 `;
 
 export const Board = () => {

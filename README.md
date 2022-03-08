@@ -45,6 +45,66 @@ KEY:
 - [❌] Solution Must Look Good
 - [❌] Provide button interface for user to input commands
 - [❌] Provide Component Rendering snapshots
+- [❌] Responsive Design
+
+
+## Technical Decisions / Libraries
+
+### Irreducable Requirements
+
+* React - The requirement is to use React.
+* Typescript - The requirement is to use either Javascript or Typescript. Typescript was used to enable an easier understanding of the codebase at first glance, as this is a technical assessment. 
+
+### Tools
+
+* Scaffolding - Create React App
+
+While I've been enamoured of Next.js as my favorite toolkit right now, the case presented does not present any clear advantages of SSR or Static rendering and does not need a backend API to set up.  Because of this, Create React App was a better solution. 
+
+If you are interested in seeing a project with Next.JS, please check out [https://github.com/brianboyko/Dept-Technical-Test](Brian Boyko - Dept Technical Test)
+
+* Unit Testing - Jest, @testing-library/react
+
+Jest is the de-facto standard for unit testing, and as it was developed by the same company as React, it's well suited to doing so.  
+
+Primary concern was unit testing the game state (src/GameContent/useGame.tsx) specifically because that is the most fragile code due to the mutable state that it manages.  
+
+* React Context API
+
+The React Context API was chosen specifically because the amount of state is relatively small and could be handled in a single reducer, rather than needing the full feature set of Redux. 
+
+* Immer
+
+Since the state includes a matrix, an immutability library was needed so that React would re-render when changes were made to the deep properties of the matrix. (Normally, changing a deep property of an object or array does not cause a re-render, as React only listens for when the main value changes. In the case of objects, arrays, and other pass-by-reference properties, that's actually the pointer -- yes, JS doesn't *have* pointers, but it does *use* pointers.)
+
+* React-Bootstrap (UI Library)
+
+As no visual guides were given for the look and feel, adopting a pre-designed UI library seemed like a good choice, rather than re-inventing the wheel. Or the button. React-Bootstrap was chosen because it was familiar and easy to use. 
+
+* React Icons
+
+A larger icon library with ES6 imports. Chosen to avoid the issues that come with importing SVG elements and styling them after the fact.  
+
+
+### Not In Scope
+
+Downscoping was considered to keep the size of the project reasonable and to ensure a speedy turnaround.
+
+* Integration Testing
+
+Keep in mind that this suite does not include integration testing, as this was not required by the brief.  If you wish to see an example of the use of integration testing (with Cypress), please check out another technical test I've recently taken: 
+
+[https://github.com/brianboyko/Dept-Technical-Test](Dept Technical Test - Brian Boyko)
+
+* UI Element Snapshots
+
+A decision not to use snapshots was conscious, as while they can be useful in some limited situations, in practice they just tend to muck up updating the toolchain when one forgets to update the snapshots after a change. But this is so frequent that snapshots are often approved even though they visually may not be correct. This is why I have been moving away from snapshots towards integration testing with Cypress for much of the same purpose. 
+
+* Storybook
+
+Usually a good idea, but downscoped for time requirements.  
+
+
 
 # Acknowlegements / Citations
 

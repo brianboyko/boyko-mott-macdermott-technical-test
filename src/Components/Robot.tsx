@@ -12,6 +12,9 @@ interface StyledRobotProps {
   animationFrame: number;
   direction?: string;
 }
+
+const SPRITESHEET_BASE_X = 150;
+const SPRITESHEET_BASE_Y = 148;
 const whichSprite = ({
   animationFrame,
   direction,
@@ -19,27 +22,27 @@ const whichSprite = ({
   let x = 0;
   let y = 0;
   if (direction === "NORTH") {
-    y = 148;
+    y = 0; // useless reassignment, but this code helps make it more human parsable for changes later. 
   }
   if (direction === "SOUTH") {
-    y = 195;
+    y = 47;
   }
   if (direction === "WEST") {
-    y = 244;
+    y = 96;
   }
   if (direction === "EAST") {
-    y = 292;
+    y = 144
   }
-  if (animationFrame % 2 === 0) {
+  if (animationFrame % 2 === 0) { // on 2 and 4
     x = 50;
   }
-  if (animationFrame % 4 === 1) {
+  if (animationFrame % 4 === 1) { // on 1
     x = 0;
   }
-  if (animationFrame % 4 === 3) {
+  if (animationFrame % 4 === 3) { // on 3
     x = 100;
   }
-  return { x: x + 150, y };
+  return { x: x + SPRITESHEET_BASE_X, y: y + SPRITESHEET_BASE_Y };
 };
 
 const StyledRobot = styled.div<StyledRobotProps>`

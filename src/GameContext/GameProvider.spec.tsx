@@ -1,21 +1,26 @@
-import useGame, { goTurn, initBoard, parseCommand } from "./useGame";
+import useGame, { goTurn, parseCommand } from "./useGame";
 import { render, act } from "@testing-library/react";
 
 // trick learned from : https://kentcdodds.com/blog/how-to-test-custom-react-hooks
 const useGameSetup = () => {
   const returnVal: any = {};
-  const TestComponent = () => {
-    Object.assign(returnVal, useGame());
+  const TestComponent = (props) => {
+    Object.assign(returnVal, ...props);
     return null;
   };
   render(<TestComponent />);
   return returnVal;
 };
 
+
 // These tests aren't exhaustive, but they should cover most
-// use cases.
+// use cases
 
 describe("useGame suite", () => {
+  beforeEach(() => {
+    const gameState = useGame();
+    render(<TestComponent/>)
+  })
   describe("goTurn()", () => {
     it("correctly turns", () => {
       expect(goTurn("RIGHT", "NORTH")).toBe("EAST");
@@ -61,7 +66,7 @@ describe("useGame suite", () => {
       expect(parseCommand("MOVE")).toEqual({ type: "MOVE" });
     });
   });
-  describe("useGame() custom hook", () => {
+  describe("GameContext", () => {
     const gameSetup = useGameSetup();
     it("initializes correctly", () => {
       expect(gameSetup.state).toEqual({
@@ -82,29 +87,73 @@ describe("useGame suite", () => {
       act(() => {
         gameSetup.processCommand(`PLACE_ROBOT 2,3,NORTH`);
       });
-      expect(gameSetup.robotX).toBe(1);
-      expect(gameSetup.robotY).toBe(2);
-      expect(gameSetup.robotFacing).toBe("NORTH");
+      expect(gameSetup.state.robotX).toBe(1);
+      expect(gameSetup.state.robotY).toBe(2);
+      expect(gameSetup.state.robotFacing).toBe("NORTH");
     });
-    it("ignores an invalid facing direction", () => {
+    xit("correctly places, removes, and toggles walls", () => {
+      act(() => {
+        gameSetup.processCommand(`PLACE_WALL 2,3`);
+        gameSetup.processCommand(`PLACE_WALL 5,5`);
+      });
+      expect(gameSetup.state.board).toEqual([
+        [true, true, true, true, true],
+        [true, true, false, true, true],
+        [true, true, true, true, true],
+        [true, true, true, true, true],
+        [true, true, true, true, false],
+      ]);
+      act(() => {
+        gameSetup.processCommand(`CLEAR_WALL 2,3`);
+      });
+      expect(gameSetup.state.board).toEqual([
+        [true, true, true, true, true],
+        [true, true, true, true, true],
+        [true, true, true, true, true],
+        [true, true, true, true, true],
+        [true, true, true, true, false],
+      ]);
+      act(() => {
+        gameSetup.processCommand(`TOGGLE_WALL 1,1`);
+        gameSetup.processCommand(`TOGGLE_WALL 5,5`);
+      });
+      expect(gameSetup.state.board).toEqual([
+        [false, true, true, true, true],
+        [true, true, true, true, true],
+        [true, true, true, true, true],
+        [true, true, true, true, true],
+        [true, true, true, true, true],
+      ]);
+      act(() => {
+        gameSetup.processCommand(`CLEAR_BOARD`);
+      });
+      expect(gameSetup.state.board).toEqual([
+        [true, true, true, true, true],
+        [true, true, true, true, true],
+        [true, true, true, true, true],
+        [true, true, true, true, true],
+        [true, true, true, true, true],
+      ]);
+    });
+    xit("ignores an invalid facing direction", () => {
       act(() => {
         gameSetup.processCommand(`PLACE_ROBOT 1,1,CENTER`);
       });
       // no changes
-      expect(gameSetup.robotX).toBe(1);
-      expect(gameSetup.robotY).toBe(2);
-      expect(gameSetup.robotFacing).toBe("NORTH");
+      expect(gameSetup.state.robotX).toBe(1);
+      expect(gameSetup.state.robotY).toBe(2);
+      expect(gameSetup.state.robotFacing).toBe("NORTH");
     });
-    it("ignores an invalid coordinate", () => {
+    xit("ignores an invalid coordinate", () => {
       act(() => {
         gameSetup.processCommand(`PLACE_ROBOT 2,6,EAST`);
       });
       // no changes
-      expect(gameSetup.robotX).toBe(1);
-      expect(gameSetup.robotY).toBe(2);
-      expect(gameSetup.robotFacing).toBe("NORTH");
+      expect(gameSetup.state.robotX).toBe(1);
+      expect(gameSetup.state.robotY).toBe(2);
+      expect(gameSetup.state.robotFacing).toBe("NORTH");
     });
-    it("moves the robot", () => {
+    xit("moves the robot", () => {
       act(() => {
         // robot starts at 1,1 facing North
         gameSetup.processCommand(`PLACE_ROBOT 1,1,NORTH`);
@@ -116,7 +165,7 @@ describe("useGame suite", () => {
       });
       expect(gameSetup.state.log).toEqual([`1,2,NORTH`, `1,5,SOUTH`]);
     });
-    it("rotates the robot", () => {
+    xit("rotates the robot", () => {
       act(() => {
         // robot starts at 1,1 facing North
         gameSetup.processCommand(`PLACE_ROBOT 1,1,NORTH`);
@@ -127,7 +176,7 @@ describe("useGame suite", () => {
       });
       expect(gameSetup.state.log).toEqual([`1,1,WEST`, `1,1,NORTH`]);
     });
-    it("correctly handles complex game state", () => {
+    xit("correctly handles complex game state", () => {
       act(() => {
         const TEST_1 = `
           PLACE_ROBOT 3,3,NORTH

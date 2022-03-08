@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useImmerReducer } from "use-immer";
 /* Immer is built into reduxjs/toolkit, but as this is a small app, 
    it doesn't really need redux. It *does* need Immer, though.
@@ -85,7 +86,7 @@ export const parseCommand = (command: string): ReducerAction => {
 export const initBoard = (): Board =>
   Array(5).fill(Array(5).fill(true)) as Board;
 
-const isValidPlacement = (
+export const isValidPlacement = (
   board: Board,
   x?: number,
   y?: number,
@@ -161,6 +162,15 @@ const gameImmerReducer = (
       state.board[x as number][y as number] = true;
     }
   }
+  if (
+    type === "TOGGLE_WALL" &&
+    isValidPlacement(state.board, x, y) &&
+    !(x === state.robotX && y === state.robotY)
+  ) {
+    if (isValidPlacement(state.board, x, y)) {
+      state.board[x as number][y as number] = !state.board[x as number][y as number]
+    }
+  }
   if (type === "LEFT" || type === "RIGHT") {
     const newDirection = goTurn(type, state.robotFacing);
     state.robotFacing = newDirection || state.robotFacing;
@@ -205,18 +215,34 @@ export const useGame = () => {
     log: [],
   });
 
-  const processCommand = (command: string) => {
-    if (process.env.NODE_ENV === "development") {
-      console.log("command", command);
-      if (command === "DEBUG") {
-        console.log(state);
-        return;
-      }
-    }
-    dispatch(parseCommand(command));
-  };
+  const logToConsole = useCallback(() => {
+    console.log(state);
+  }, [state]);
 
-  return { state, processCommand };
+  const processCommand = useCallback(
+    (command: string) => {
+      if (process.env.NODE_ENV === "development") {
+        console.log("command", command);
+        if (command === "DEBUG") {
+          logToConsole();
+          return;
+        }
+      }
+      dispatch(parseCommand(command));
+    },
+    [dispatch, logToConsole]
+  );
+
+  const checkValidReport = useCallback(() => isValidReportData(state), [state]);
+
+  // mostly used to determine if buttons should be disabled;
+  const checkPlacement = useCallback(
+    (x?: number, y?: number, facing?: string) =>
+      isValidPlacement(state.board, x, y, facing),
+    [state.board]
+  );
+
+  return { state, processCommand, checkPlacement, checkValidReport };
 };
 
 export default useGame;
