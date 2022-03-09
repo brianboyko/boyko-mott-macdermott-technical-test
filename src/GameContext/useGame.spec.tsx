@@ -4,23 +4,18 @@ import { render, act } from "@testing-library/react";
 // trick learned from : https://kentcdodds.com/blog/how-to-test-custom-react-hooks
 const useGameSetup = () => {
   const returnVal: any = {};
-  const TestComponent = (props) => {
-    Object.assign(returnVal, ...props);
+  const TestComponent = () => {
+    Object.assign(returnVal, useGame());
     return null;
   };
   render(<TestComponent />);
   return returnVal;
 };
 
-
 // These tests aren't exhaustive, but they should cover most
 // use cases
 
 describe("useGame suite", () => {
-  beforeEach(() => {
-    const gameState = useGame();
-    render(<TestComponent/>)
-  })
   describe("goTurn()", () => {
     it("correctly turns", () => {
       expect(goTurn("RIGHT", "NORTH")).toBe("EAST");
@@ -91,7 +86,7 @@ describe("useGame suite", () => {
       expect(gameSetup.state.robotY).toBe(2);
       expect(gameSetup.state.robotFacing).toBe("NORTH");
     });
-    xit("correctly places, removes, and toggles walls", () => {
+    it("correctly places, removes, and toggles walls", () => {
       act(() => {
         gameSetup.processCommand(`PLACE_WALL 2,3`);
         gameSetup.processCommand(`PLACE_WALL 5,5`);
@@ -135,7 +130,7 @@ describe("useGame suite", () => {
         [true, true, true, true, true],
       ]);
     });
-    xit("ignores an invalid facing direction", () => {
+    it("ignores an invalid facing direction", () => {
       act(() => {
         gameSetup.processCommand(`PLACE_ROBOT 1,1,CENTER`);
       });
@@ -144,7 +139,7 @@ describe("useGame suite", () => {
       expect(gameSetup.state.robotY).toBe(2);
       expect(gameSetup.state.robotFacing).toBe("NORTH");
     });
-    xit("ignores an invalid coordinate", () => {
+    it("ignores an invalid coordinate", () => {
       act(() => {
         gameSetup.processCommand(`PLACE_ROBOT 2,6,EAST`);
       });
@@ -153,7 +148,7 @@ describe("useGame suite", () => {
       expect(gameSetup.state.robotY).toBe(2);
       expect(gameSetup.state.robotFacing).toBe("NORTH");
     });
-    xit("moves the robot", () => {
+    it("moves the robot", () => {
       act(() => {
         // robot starts at 1,1 facing North
         gameSetup.processCommand(`PLACE_ROBOT 1,1,NORTH`);
@@ -165,7 +160,7 @@ describe("useGame suite", () => {
       });
       expect(gameSetup.state.log).toEqual([`1,2,NORTH`, `1,5,SOUTH`]);
     });
-    xit("rotates the robot", () => {
+    it("rotates the robot", () => {
       act(() => {
         // robot starts at 1,1 facing North
         gameSetup.processCommand(`PLACE_ROBOT 1,1,NORTH`);
@@ -176,7 +171,7 @@ describe("useGame suite", () => {
       });
       expect(gameSetup.state.log).toEqual([`1,1,WEST`, `1,1,NORTH`]);
     });
-    xit("correctly handles complex game state", () => {
+    it("correctly handles complex game state", () => {
       act(() => {
         const TEST_1 = `
           PLACE_ROBOT 3,3,NORTH
