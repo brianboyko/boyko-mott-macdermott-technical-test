@@ -13,7 +13,7 @@ const useGameSetup = () => {
 };
 
 // These tests aren't exhaustive, but they should cover the commands
-// mentioned in the spec and most use cases. 
+// mentioned in the spec and most use cases.
 let gameSetup: ReturnType<typeof useGame>;
 
 describe("useGame suite", () => {
@@ -104,7 +104,7 @@ describe("useGame suite", () => {
         gameSetup.processCommand(`PLACE_WALL 2,3`);
         gameSetup.processCommand(`PLACE_WALL 5,5`);
       });
-      
+
       expect(gameSetup.state.board).toEqual([
         [true, true, true, true, true],
         [true, true, true, true, true],

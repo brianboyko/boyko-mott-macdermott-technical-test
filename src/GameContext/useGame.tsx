@@ -141,7 +141,11 @@ const gameImmerReducer = (
   if (type === "CLEAR_BOARD") {
     state.board = initBoard();
   }
-  if (type === "PLACE_ROBOT" && isValidPlacement(state.board, x, y, facing) && facing !== undefined) {
+  if (
+    type === "PLACE_ROBOT" &&
+    isValidPlacement(state.board, x, y, facing) &&
+    facing !== undefined
+  ) {
     state.robotX = x;
     state.robotY = y;
     state.robotFacing = facing;
@@ -168,7 +172,7 @@ const gameImmerReducer = (
     isValidCell(x, y) &&
     !(x === state.robotX && y === state.robotY)
   ) {
-    console.log(`wall is ${x}, ${y}`)
+    console.log(`wall is ${x}, ${y}`);
     state.board[y as number][x as number] =
       !state.board[y as number][x as number];
   }
@@ -176,10 +180,9 @@ const gameImmerReducer = (
     const newDirection = goTurn(type, state.robotFacing);
     state.robotFacing = newDirection || state.robotFacing;
   }
-  if (typeof type === 'string' && type.startsWith('SET_DIRECTION')) {
-    const [, newDirection] = type.split(':')
-    if(DIRECTIONS.includes(newDirection))
-    state.robotFacing = (newDirection);
+  if (typeof type === "string" && type.startsWith("SET_DIRECTION")) {
+    const [, newDirection] = type.split(":");
+    if (DIRECTIONS.includes(newDirection)) state.robotFacing = newDirection;
   }
   if (type === "MOVE") {
     if (

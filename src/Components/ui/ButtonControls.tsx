@@ -1,11 +1,6 @@
 import styled from "@emotion/styled";
 
-import {
-  MoveRobotButton,
-  TurnLeftButton,
-  TurnRightButton,
-  ReportButton,
-} from "./Buttons";
+import { MoveRobotButton, TurnLeftButton, TurnRightButton } from "./Buttons";
 
 const ButtonControlFlex = styled.div`
   display: flex;
@@ -22,8 +17,6 @@ export const ButtonControls = () => {
         <MoveRobotButton />
         <TurnRightButton />
       </ButtonControlFlex>
-
-      <ReportButton />
     </>
   );
 };

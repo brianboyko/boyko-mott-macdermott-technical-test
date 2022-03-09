@@ -13,7 +13,7 @@ export const ReportLog = () => {
   const reversedLog = [...log].reverse();
   return (
     <>
-      <ReportButton />{" "}
+      <ReportButton />
       {log.length ? (
         <>
           <h2>Report Log (Most recent first)</h2>
