@@ -104,7 +104,7 @@ export const isValidPlacement = (
     return false;
   }
   if (isValidCell(x, y)) {
-    return board[x as number][y as number];
+    return board[y as number][x as number];
   }
   return false;
 };
@@ -141,7 +141,7 @@ const gameImmerReducer = (
   if (type === "CLEAR_BOARD") {
     state.board = initBoard();
   }
-  if (type === "PLACE_ROBOT" && isValidPlacement(state.board, x, y, facing)) {
+  if (type === "PLACE_ROBOT" && isValidPlacement(state.board, x, y, facing) && facing !== undefined) {
     state.robotX = x;
     state.robotY = y;
     state.robotFacing = facing;
@@ -156,11 +156,11 @@ const gameImmerReducer = (
     isValidPlacement(state.board, x, y) &&
     !(x === state.robotX && y === state.robotY)
   ) {
-    state.board[x as number][y as number] = false;
+    state.board[y as number][x as number] = false;
   }
   if (type === "CLEAR_WALL") {
     if (isValidCell(x, y)) {
-      state.board[x as number][y as number] = true;
+      state.board[y as number][x as number] = true;
     }
   }
   if (
@@ -168,8 +168,9 @@ const gameImmerReducer = (
     isValidCell(x, y) &&
     !(x === state.robotX && y === state.robotY)
   ) {
-    state.board[x as number][y as number] =
-      !state.board[x as number][y as number];
+    console.log(`wall is ${x}, ${y}`)
+    state.board[y as number][x as number] =
+      !state.board[y as number][x as number];
   }
   if (type === "LEFT" || type === "RIGHT") {
     const newDirection = goTurn(type, state.robotFacing);

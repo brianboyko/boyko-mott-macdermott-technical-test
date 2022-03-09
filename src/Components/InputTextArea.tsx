@@ -1,5 +1,6 @@
 import React, { useState, useContext, useCallback } from "react";
 import { GameDispatchContext } from "../GameContext/GameProvider";
+
 export const InputTextArea = () => {
   const { processCommand } = useContext(GameDispatchContext);
   const [textValue, setTextValue] = useState<string>("");

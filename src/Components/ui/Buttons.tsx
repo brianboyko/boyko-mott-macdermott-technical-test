@@ -1,14 +1,13 @@
 import { useCallback, useContext, useMemo } from "react";
-import Button from "react-bootstrap/Button";
+import { Button, ButtonProps } from "@chakra-ui/react";
 import { GameDispatchContext } from "../../GameContext/GameProvider";
 import {
-  GrRobot,
-  GrRotateLeft,
-  GrRotateRight,
-  GrRun,
-  GrAnnounce,
-  GrStatusPlaceholder,
-} from "react-icons/gr";
+  MdPlace,
+  MdAnnouncement,
+  MdOutlineDirectionsRun,
+  MdRotateLeft,
+  MdRotateRight,
+} from "react-icons/md";
 import type { IconType } from "react-icons";
 
 interface GenericButtonProps {
@@ -17,6 +16,15 @@ interface GenericButtonProps {
   Icon: IconType;
   disabled?: boolean;
 }
+
+export const PlaceRobotButton = (props: any) => {
+  const { textLabel, ...restProps } = props;
+  return (
+    <Button {...restProps}>
+      <MdPlace /> {textLabel}
+    </Button>
+  );
+};
 
 const GenericButton = ({
   command,
@@ -30,49 +38,14 @@ const GenericButton = ({
     [command, processCommand]
   );
   return (
-    <Button variant="primary" onClick={handleClick} disabled={disabled}>
+    <Button
+      colorScheme="blue"
+      size="md"
+      onClick={handleClick}
+      disabled={disabled}
+    >
       {Icon && <Icon />} {textLabel}
     </Button>
-  );
-};
-
-export const PlaceRobotButton = ({
-  x,
-  y,
-  facing,
-}: {
-  x?: number;
-  y?: number;
-  facing?: string;
-}) => {
-  const { checkPlacement } = useContext(GameDispatchContext);
-  const isDisabled = !checkPlacement(x, y, facing);
-  return (
-    <GenericButton
-      command={`PLACE_ROBOT ${x},${y},${facing}`}
-      disabled={isDisabled}
-      Icon={GrRobot}
-      textLabel="Place Robot"
-    />
-  );
-};
-
-export const PlaceWallButton = ({
-  x,
-  y,
-}: {
-  x?: number;
-  y?: number;
-}) => {
-  const { checkPlacement } = useContext(GameDispatchContext);
-  const isDisabled = !checkPlacement(x, y);
-  return (
-    <GenericButton
-      command={`PLACE_WALL ${x},${y}`}
-      disabled={isDisabled}
-      Icon={GrRobot}
-      textLabel="Place Robot"
-    />
   );
 };
 
@@ -80,7 +53,7 @@ export const MoveRobotButton = () => {
   return (
     <GenericButton
       command={`MOVE`}
-      Icon={GrRun}
+      Icon={MdOutlineDirectionsRun}
       textLabel="Move Robot"
     />
   );
@@ -88,11 +61,7 @@ export const MoveRobotButton = () => {
 
 export const TurnLeftButton = () => {
   return (
-    <GenericButton
-      command={`LEFT`}
-      Icon={GrRotateLeft}
-      textLabel="Turn Left"
-    />
+    <GenericButton command={`LEFT`} Icon={MdRotateLeft} textLabel="Turn Left" />
   );
 };
 
@@ -100,7 +69,7 @@ export const TurnRightButton = () => {
   return (
     <GenericButton
       command={`RIGHT`}
-      Icon={GrRotateRight}
+      Icon={MdRotateRight}
       textLabel="Turn Right"
     />
   );
@@ -109,8 +78,8 @@ export const TurnRightButton = () => {
 export const ReportButton = () => {
   return (
     <GenericButton
-      command={`RIGHT`}
-      Icon={GrAnnounce}
+      command={`REPORT`}
+      Icon={MdAnnouncement}
       textLabel="Report"
     />
   );

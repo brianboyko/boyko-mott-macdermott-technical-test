@@ -16,12 +16,11 @@ const useGameSetup = () => {
 // use cases
 let gameSetup: ReturnType<typeof useGame>;
 
-
 describe("useGame suite", () => {
-  // thanks to davidmfoley on the Reactiflux discord for helping me debug this. 
+  // thanks to davidmfoley on the Reactiflux discord for helping me debug this.
   beforeEach(() => {
-    gameSetup = useGameSetup()
-  })
+    gameSetup = useGameSetup();
+  });
   describe("goTurn()", () => {
     it("correctly turns", () => {
       expect(goTurn("RIGHT", "NORTH")).toBe("EAST");
@@ -96,10 +95,11 @@ describe("useGame suite", () => {
         gameSetup.processCommand(`PLACE_WALL 2,3`);
         gameSetup.processCommand(`PLACE_WALL 5,5`);
       });
+      
       expect(gameSetup.state.board).toEqual([
         [true, true, true, true, true],
-        [true, true, false, true, true],
         [true, true, true, true, true],
+        [true, false, true, true, true],
         [true, true, true, true, true],
         [true, true, true, true, false],
       ]);
@@ -227,9 +227,9 @@ describe("useGame suite", () => {
         board: [
           [true, true, true, true, true],
           [true, true, true, true, true],
-          [true, true, true, true, false],
           [true, true, true, true, true],
           [true, true, true, true, true],
+          [true, true, false, true, true],
         ],
         robotFacing: "EAST",
         robotX: 0,
@@ -256,9 +256,9 @@ describe("useGame suite", () => {
       });
       expect(gameSetup.state).toEqual({
         board: [
-          [false, true, false, true, true],
+          [false, true, true, true, true],
           [true, true, true, true, true],
-          [true, true, true, true, true],
+          [false, true, true, true, true],
           [true, true, true, true, true],
           [true, true, true, true, true],
         ],

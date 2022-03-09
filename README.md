@@ -77,9 +77,11 @@ The React Context API was chosen specifically because the amount of state is rel
 
 Since the state includes a matrix, an immutability library was needed so that React would re-render when changes were made to the deep properties of the matrix. (Normally, changing a deep property of an object or array does not cause a re-render, as React only listens for when the main value changes. In the case of objects, arrays, and other pass-by-reference properties, that's actually the pointer -- yes, JS doesn't *have* pointers, but it does *use* pointers.)
 
-* React-Bootstrap (UI Library)
+* Chakra (UI Library)
 
-As no visual guides were given for the look and feel, adopting a pre-designed UI library seemed like a good choice, rather than re-inventing the wheel. Or the button. React-Bootstrap was chosen because it was familiar and easy to use. 
+As no visual guides were given for the look and feel, adopting a pre-designed UI library seemed like a good choice, rather than re-inventing the wheel. Or the button. Chakra was chosen for it's small library size and simplicity.
+
+Since Chakra uses emotion as a dependency, emotion was chosen for styling rather than styled-components.  
 
 * React Icons
 
@@ -109,6 +111,8 @@ Usually a good idea, but downscoped for time requirements.
 # Acknowlegements / Citations
 
 [Robot sprite sheet by "Wayward Martian"](https://forums.rpgmakerweb.com/index.php?threads/skinny-robot-charset-wanted-for-mv.126540/)
+
+Some unit tests were having difficulty running; to get help I used Reactiflux Discord, and got help from David M. Foley.  Foley is the author of react testing tool [isolate-react](https://github.com/davidmfoley/isolate-react), a tool which I wish I knew about when I started this project.  
 
 ---
 
