@@ -23,7 +23,7 @@ const whichSprite = ({
   let x = 0;
   let y = 0;
   if (direction === "NORTH") {
-    y = 0; // useless reassignment, but this code helps make it more human parsable for changes later. 
+    y = 0; // useless reassignment, but this code helps make it more human parsable for changes later.
   }
   if (direction === "SOUTH") {
     y = 47;
@@ -32,15 +32,18 @@ const whichSprite = ({
     y = 96;
   }
   if (direction === "EAST") {
-    y = 144
+    y = 144;
   }
-  if (animationFrame % 2 === 0) { // on 2 and 4
+  if (animationFrame % 2 === 0) {
+    // on 2 and 4
     x = 50;
   }
-  if (animationFrame % 4 === 1) { // on 1
+  if (animationFrame % 4 === 1) {
+    // on 1
     x = 0;
   }
-  if (animationFrame % 4 === 3) { // on 3
+  if (animationFrame % 4 === 3) {
+    // on 3
     x = 100;
   }
   return { x: x + SPRITESHEET_BASE_X, y: y + SPRITESHEET_BASE_Y };
