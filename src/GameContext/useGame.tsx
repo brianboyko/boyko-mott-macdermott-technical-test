@@ -86,6 +86,13 @@ export const parseCommand = (command: string): ReducerAction => {
 export const initBoard = (): Board =>
   Array(5).fill(Array(5).fill(true)) as Board;
 
+export const isValidCell = (x?: number, y?: number): boolean => {
+  // if we've not correctly defined the position
+  if (typeof x === "undefined" || typeof y === "undefined") {
+    return false;
+  }
+  return x > -1 && x < 5 && y > -1 && y < 5;
+};
 export const isValidPlacement = (
   board: Board,
   x?: number,
@@ -96,14 +103,8 @@ export const isValidPlacement = (
   if (facing !== undefined && !DIRECTIONS.includes(facing)) {
     return false;
   }
-  // if we've not correctly defined the position
-  if (typeof x === "undefined" || typeof y === "undefined") {
-    return false;
-  }
-  // if it's not on the board.
-  if (x > -1 && x < 5 && y > -1 && y < 5) {
-    // return the current cell state
-    return board[x][y];
+  if (isValidCell(x, y)) {
+    return board[x as number][y as number];
   }
   return false;
 };
@@ -158,18 +159,17 @@ const gameImmerReducer = (
     state.board[x as number][y as number] = false;
   }
   if (type === "CLEAR_WALL") {
-    if (isValidPlacement(state.board, x, y)) {
+    if (isValidCell(x, y)) {
       state.board[x as number][y as number] = true;
     }
   }
   if (
     type === "TOGGLE_WALL" &&
-    isValidPlacement(state.board, x, y) &&
+    isValidCell(x, y) &&
     !(x === state.robotX && y === state.robotY)
   ) {
-    if (isValidPlacement(state.board, x, y)) {
-      state.board[x as number][y as number] = !state.board[x as number][y as number]
-    }
+    state.board[x as number][y as number] =
+      !state.board[x as number][y as number];
   }
   if (type === "LEFT" || type === "RIGHT") {
     const newDirection = goTurn(type, state.robotFacing);

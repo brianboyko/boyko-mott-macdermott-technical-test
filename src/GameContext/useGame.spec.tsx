@@ -14,8 +14,14 @@ const useGameSetup = () => {
 
 // These tests aren't exhaustive, but they should cover most
 // use cases
+let gameSetup: ReturnType<typeof useGame>;
+
 
 describe("useGame suite", () => {
+  // thanks to davidmfoley on the Reactiflux discord for helping me debug this. 
+  beforeEach(() => {
+    gameSetup = useGameSetup()
+  })
   describe("goTurn()", () => {
     it("correctly turns", () => {
       expect(goTurn("RIGHT", "NORTH")).toBe("EAST");
@@ -62,7 +68,6 @@ describe("useGame suite", () => {
     });
   });
   describe("GameContext", () => {
-    const gameSetup = useGameSetup();
     it("initializes correctly", () => {
       expect(gameSetup.state).toEqual({
         board: [
@@ -135,18 +140,48 @@ describe("useGame suite", () => {
         gameSetup.processCommand(`PLACE_ROBOT 1,1,CENTER`);
       });
       // no changes
-      expect(gameSetup.state.robotX).toBe(1);
-      expect(gameSetup.state.robotY).toBe(2);
-      expect(gameSetup.state.robotFacing).toBe("NORTH");
+      expect(gameSetup.state.robotX).toBe(undefined);
+      expect(gameSetup.state.robotY).toBe(undefined);
+      expect(gameSetup.state.robotFacing).toBe(undefined);
+
+      act(() => {
+        gameSetup.processCommand(`PLACE_ROBOT 1,1,EAST`);
+      });
+      // valid input
+      expect(gameSetup.state.robotX).toBe(0);
+      expect(gameSetup.state.robotY).toBe(0);
+      expect(gameSetup.state.robotFacing).toBe("EAST");
+      act(() => {
+        gameSetup.processCommand(`PLACE_ROBOT 5,5,NORTH_BY_NORTHWEST`);
+      });
+      // no change from valid input
+      expect(gameSetup.state.robotX).toBe(0);
+      expect(gameSetup.state.robotY).toBe(0);
+      expect(gameSetup.state.robotFacing).toBe("EAST");
     });
     it("ignores an invalid coordinate", () => {
       act(() => {
         gameSetup.processCommand(`PLACE_ROBOT 2,6,EAST`);
       });
       // no changes
-      expect(gameSetup.state.robotX).toBe(1);
-      expect(gameSetup.state.robotY).toBe(2);
-      expect(gameSetup.state.robotFacing).toBe("NORTH");
+      expect(gameSetup.state.robotX).toBe(undefined);
+      expect(gameSetup.state.robotY).toBe(undefined);
+      expect(gameSetup.state.robotFacing).toBe(undefined);
+
+      act(() => {
+        gameSetup.processCommand(`PLACE_ROBOT 1,1,EAST`);
+      });
+      // valid input
+      expect(gameSetup.state.robotX).toBe(0);
+      expect(gameSetup.state.robotY).toBe(0);
+      expect(gameSetup.state.robotFacing).toBe("EAST");
+      act(() => {
+        gameSetup.processCommand(`PLACE_ROBOT 2,6,EAST`);
+      });
+      // no changes
+      expect(gameSetup.state.robotX).toBe(0);
+      expect(gameSetup.state.robotY).toBe(0);
+      expect(gameSetup.state.robotFacing).toBe("EAST");
     });
     it("moves the robot", () => {
       act(() => {
