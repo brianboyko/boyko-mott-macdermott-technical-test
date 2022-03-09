@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useImmerReducer } from "use-immer";
 /* Immer is built into reduxjs/toolkit, but as this is a small app, 
    it doesn't really need redux. It *does* need Immer, though.
@@ -33,7 +34,7 @@ export interface GameState {
 // type Direction = "NORTH" | "EAST" | "SOUTH" | "WEST" | undefined
 // but that's a level of TS specificity that a code challenge doesn't
 // really need.
-const DIRECTIONS = ["NORTH", "EAST", "SOUTH", "WEST"];
+export const DIRECTIONS = ["NORTH", "EAST", "SOUTH", "WEST"];
 
 export const goTurn = (
   turn: string,
@@ -85,7 +86,14 @@ export const parseCommand = (command: string): ReducerAction => {
 export const initBoard = (): Board =>
   Array(5).fill(Array(5).fill(true)) as Board;
 
-const isValidPlacement = (
+export const isValidCell = (x?: number, y?: number): boolean => {
+  // if we've not correctly defined the position
+  if (typeof x === "undefined" || typeof y === "undefined") {
+    return false;
+  }
+  return x > -1 && x < 5 && y > -1 && y < 5;
+};
+export const isValidPlacement = (
   board: Board,
   x?: number,
   y?: number,
@@ -95,14 +103,8 @@ const isValidPlacement = (
   if (facing !== undefined && !DIRECTIONS.includes(facing)) {
     return false;
   }
-  // if we've not correctly defined the position
-  if (typeof x === "undefined" || typeof y === "undefined") {
-    return false;
-  }
-  // if it's not on the board.
-  if (x > -1 && x < 5 && y > -1 && y < 5) {
-    // return the current cell state
-    return board[x][y];
+  if (isValidCell(x, y)) {
+    return board[y as number][x as number];
   }
   return false;
 };
@@ -139,7 +141,7 @@ const gameImmerReducer = (
   if (type === "CLEAR_BOARD") {
     state.board = initBoard();
   }
-  if (type === "PLACE_ROBOT" && isValidPlacement(state.board, x, y, facing)) {
+  if (type === "PLACE_ROBOT" && isValidPlacement(state.board, x, y, facing) && facing !== undefined) {
     state.robotX = x;
     state.robotY = y;
     state.robotFacing = facing;
@@ -154,16 +156,30 @@ const gameImmerReducer = (
     isValidPlacement(state.board, x, y) &&
     !(x === state.robotX && y === state.robotY)
   ) {
-    state.board[x as number][y as number] = false;
+    state.board[y as number][x as number] = false;
   }
   if (type === "CLEAR_WALL") {
-    if (isValidPlacement(state.board, x, y)) {
-      state.board[x as number][y as number] = true;
+    if (isValidCell(x, y)) {
+      state.board[y as number][x as number] = true;
     }
+  }
+  if (
+    type === "TOGGLE_WALL" &&
+    isValidCell(x, y) &&
+    !(x === state.robotX && y === state.robotY)
+  ) {
+    console.log(`wall is ${x}, ${y}`)
+    state.board[y as number][x as number] =
+      !state.board[y as number][x as number];
   }
   if (type === "LEFT" || type === "RIGHT") {
     const newDirection = goTurn(type, state.robotFacing);
     state.robotFacing = newDirection || state.robotFacing;
+  }
+  if (typeof type === 'string' && type.startsWith('SET_DIRECTION')) {
+    const [, newDirection] = type.split(':')
+    if(DIRECTIONS.includes(newDirection))
+    state.robotFacing = (newDirection);
   }
   if (type === "MOVE") {
     if (
@@ -201,22 +217,38 @@ export const useGame = () => {
     board: initBoard(),
     robotX: undefined,
     robotY: undefined,
-    robotFacing: undefined,
+    robotFacing: "SOUTH",
     log: [],
   });
 
-  const processCommand = (command: string) => {
-    if (process.env.NODE_ENV === "development") {
-      console.log("command", command);
-      if (command === "DEBUG") {
-        console.log(state);
-        return;
-      }
-    }
-    dispatch(parseCommand(command));
-  };
+  const logToConsole = useCallback(() => {
+    console.log(state);
+  }, [state]);
 
-  return { state, processCommand };
+  const processCommand = useCallback(
+    (command: string) => {
+      if (process.env.NODE_ENV === "development") {
+        console.log("command", command);
+        if (command === "DEBUG") {
+          logToConsole();
+          return;
+        }
+      }
+      dispatch(parseCommand(command));
+    },
+    [dispatch, logToConsole]
+  );
+
+  const checkValidReport = useCallback(() => isValidReportData(state), [state]);
+
+  // mostly used to determine if buttons should be disabled;
+  const checkPlacement = useCallback(
+    (x?: number, y?: number, facing?: string) =>
+      isValidPlacement(state.board, x, y, facing),
+    [state.board]
+  );
+
+  return { state, processCommand, checkPlacement, checkValidReport };
 };
 
 export default useGame;

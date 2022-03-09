@@ -1,5 +1,6 @@
 import React, { useContext, useMemo } from "react";
 import { GameStateContext } from "../GameContext/GameProvider";
+import { ReportButton } from "./ui/Buttons";
 
 // we don't want rerender whenever the state changes,
 // only when the state.log changes.
@@ -9,12 +10,23 @@ const useMemoizedReportLog = () => {
 };
 export const ReportLog = () => {
   const { log } = useMemoizedReportLog();
+  const reversedLog = [...log].reverse();
   return (
-    <ul>
-      {log.map((entry, index) => (
-        <li key={`LOG-${index}`}>{entry}</li>
-      ))}
-    </ul>
+    <>
+      <ReportButton />{" "}
+      {log.length ? (
+        <>
+          <h2>Report Log (Most recent first)</h2>
+          <hr />
+          {reversedLog.map((entry, index) => (
+            <>
+              <div key={`LOG-${index}`}>{entry}</div>
+              <hr />
+            </>
+          ))}
+        </>
+      ) : null}
+    </>
   );
 };
 
