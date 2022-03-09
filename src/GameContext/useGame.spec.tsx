@@ -12,8 +12,8 @@ const useGameSetup = () => {
   return returnVal;
 };
 
-// These tests aren't exhaustive, but they should cover most
-// use cases
+// These tests aren't exhaustive, but they should cover the commands
+// mentioned in the spec and most use cases. 
 let gameSetup: ReturnType<typeof useGame>;
 
 describe("useGame suite", () => {
@@ -78,7 +78,7 @@ describe("useGame suite", () => {
         ],
         robotX: undefined,
         robotY: undefined,
-        robotFacing: undefined,
+        robotFacing: "SOUTH",
         log: [],
       });
     });
@@ -89,6 +89,15 @@ describe("useGame suite", () => {
       expect(gameSetup.state.robotX).toBe(1);
       expect(gameSetup.state.robotY).toBe(2);
       expect(gameSetup.state.robotFacing).toBe("NORTH");
+    });
+    it("correctly faces a robot", () => {
+      act(() => {
+        gameSetup.processCommand(`PLACE_ROBOT 2,3,NORTH`);
+        gameSetup.processCommand(`SET_DIRECTION:SOUTH`);
+      });
+      expect(gameSetup.state.robotX).toBe(1);
+      expect(gameSetup.state.robotY).toBe(2);
+      expect(gameSetup.state.robotFacing).toBe("SOUTH");
     });
     it("correctly places, removes, and toggles walls", () => {
       act(() => {
@@ -142,7 +151,7 @@ describe("useGame suite", () => {
       // no changes
       expect(gameSetup.state.robotX).toBe(undefined);
       expect(gameSetup.state.robotY).toBe(undefined);
-      expect(gameSetup.state.robotFacing).toBe(undefined);
+      expect(gameSetup.state.robotFacing).toBe("SOUTH");
 
       act(() => {
         gameSetup.processCommand(`PLACE_ROBOT 1,1,EAST`);
@@ -166,7 +175,7 @@ describe("useGame suite", () => {
       // no changes
       expect(gameSetup.state.robotX).toBe(undefined);
       expect(gameSetup.state.robotY).toBe(undefined);
-      expect(gameSetup.state.robotFacing).toBe(undefined);
+      expect(gameSetup.state.robotFacing).toBe("SOUTH");
 
       act(() => {
         gameSetup.processCommand(`PLACE_ROBOT 1,1,EAST`);

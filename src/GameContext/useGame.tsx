@@ -34,7 +34,7 @@ export interface GameState {
 // type Direction = "NORTH" | "EAST" | "SOUTH" | "WEST" | undefined
 // but that's a level of TS specificity that a code challenge doesn't
 // really need.
-const DIRECTIONS = ["NORTH", "EAST", "SOUTH", "WEST"];
+export const DIRECTIONS = ["NORTH", "EAST", "SOUTH", "WEST"];
 
 export const goTurn = (
   turn: string,
@@ -176,6 +176,11 @@ const gameImmerReducer = (
     const newDirection = goTurn(type, state.robotFacing);
     state.robotFacing = newDirection || state.robotFacing;
   }
+  if (typeof type === 'string' && type.startsWith('SET_DIRECTION')) {
+    const [, newDirection] = type.split(':')
+    if(DIRECTIONS.includes(newDirection))
+    state.robotFacing = (newDirection);
+  }
   if (type === "MOVE") {
     if (
       typeof state.robotX === "undefined" ||
@@ -212,7 +217,7 @@ export const useGame = () => {
     board: initBoard(),
     robotX: undefined,
     robotY: undefined,
-    robotFacing: undefined,
+    robotFacing: "SOUTH",
     log: [],
   });
 
