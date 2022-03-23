@@ -1,4 +1,4 @@
-# Technical Test - Brian Boyko for Mott MacDermott
+# Technical Test - Carrie-Anne Boyko for Mott MacDermott
 
 Installation:
 
